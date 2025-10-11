@@ -5,12 +5,19 @@ dotenv.config();
 import express from "express";
 import session from "express-session";
 import passport from "passport";
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs";
 import cors from "cors";
 
 import setupPassport from "./config/passport.js";
-import pool from "./config/db.js";
-import isAuthenticated from "./middleware.js";
+// import pool from "./config/db.js";
+// import isAuthenticated from "./middleware.js";
+
+import authRoutes from "./routes/AuthRoutes.js";
+import adminRoutes from "./routes/AdminRoutes.js";
+// import submissionRoutes from "./routes/SubmissionRoutes.js";
+// import testRoutes from "./routes/TestRoutes.js";
+// import announcementRoutes from "./routes/AnnouncementRoutes.js";
+// import otherRoutes from "./routes/OtherRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -20,8 +27,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: "http://localhost:5173", // your React/Vite frontend
-  credentials: true
+  origin: "http://localhost:5173",
+  credentials: true,
+  methods: ["*"],
+  allowedHeaders: ["*"]
 }));
 
 app.use(session({
@@ -39,86 +48,90 @@ app.use(passport.session());
 setupPassport(passport);
 
 // ----------------- Routes -----------------
+// app.use("/api", otherRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+// app.use("/api/submission", submissionRoutes);
+// app.use("/api/test", testRoutes);
+// app.use("/api/announcement", announcementRoutes);
 
-// Register
-app.post("/api/register", async (req, res) => {
-  const { username, password, email } = req.body;
-  try {
-    const hashed = await bcrypt.hash(password, 10);
-    await pool.execute(
-      "INSERT INTO user (username, email, password) VALUES (?, ?, ?)",
-      [username, email, hashed]
-    );
-    res.send({ message: "User registered successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ error: "Error registering user" });
-  }
-});
+// app.get("/leaderboard", isAdmin, async (req, res) => {
+//     try {
+//         const users = await User.find({})
+//             .populate({
+//                 path: "submissions.test_id",   // populate test details
+//                 model: "Test",
+//                 select: "testName branch totalMarks" // limit fields if needed
+//             })
+//             .lean(); // faster read-only objects
 
-// Local login
-app.post("/api/login", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err) return next(err);
-    if (!user) return res.status(401).send({ error: "Invalid credentials" });
-    req.logIn(user, (err) => {
-      if (err) return next(err);
-      return res.send({ message: "Logged in successfully", user });
+//         res.status(200).json(users);
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// });
+
+// app.get("/stats", isAdmin, async (req, res) => {
+//   try {
+//     const now = new Date();
+
+//     // Count users
+//     const totalUsers = await User.countDocuments();
+
+//     // Fetch all tests once for efficiency
+//     const tests = await Test.find({}, "startTime endTime");
+
+//     // Calculate counts
+//     let activeTests = 0;
+//     let completedTests = 0;
+//     let upcomingTests = 0;
+
+//     tests.forEach(test => {
+//       const start = new Date(test.startTime);
+//       const end = new Date(test.endTime);
+
+//       if (start <= now && end >= now) {
+//         activeTests++;
+//       } else if (end < now) {
+//         completedTests++;
+//       } else if (start > now) {
+//         upcomingTests++;
+//       }
+//     });
+
+//     res.status(200).json({
+//       success: true,
+//       totalUsers,
+//       activeTests,
+//       completedTests,
+//       upcomingTests
+//     });
+//   } catch (err) {
+//     console.error("Error fetching stats:", err);
+//     res.status(500).json({ success: false, error: err.message });
+//   }
+// });
+
+// Error Handler
+// In app.js - replace the error handler
+app.use((err, req, res, next) => {
+    let { status = 500, message = "Sorry! Some error occurred." } = err;
+    err.status = status;
+    err.message = message;
+    
+    // Send JSON response instead of trying to render a view
+    res.status(status).json({ 
+        error: true,
+        message: err.message,
+        status: status
     });
-  })(req, res, next);
+});//.......
+
+// Page not found error as middleware
+app.use((req, res) => {
+    res.status(404).send("Page not found")
 });
 
-// Google OAuth
-app.get("/api/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-
-app.get("/api/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login-failure" }),
-  (req, res) => {
-    // redirect to frontend
-    res.redirect("http://localhost:5173");
-  }
-);
-
-// Login failure
-app.get("/api/login-failure", (req, res) => {
-  res.status(401).send({ error: "Login failed" });
-});
-
-// Logout
-app.get("/api/logout", (req, res, next) => {
-  req.logout(err => {
-    if (err) return next(err);
-    res.send({ message: "Logged out successfully" });
-  });
-});
-
-app.post("/api/admin/login", async (req, res) => {
-    const { adminUserName, password } = req.body;
-    try {
-        const [rows] = await pool.execute(
-            "SELECT * FROM admin WHERE adminUserName = ?",
-            [adminUserName]
-        );
-
-        if (rows.length === 0) {
-            return res.status(401).send({ error: "Invalid username or password" });
-        }
-
-        const admin = rows[0];
-
-        // Compare password
-        const isMatch = await bcrypt.compare(password, admin.password);
-        if (!isMatch) {
-            return res.status(401).send({ error: "Invalid username or password" });
-        }
-
-        // Login successful
-        res.send({ message: "Logged in successfully", admin: { id: admin.id, adminUserName: admin.adminUserName } });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send({ error: "Error logging in" });
-    }
-});
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

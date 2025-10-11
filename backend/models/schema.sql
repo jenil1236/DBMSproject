@@ -1,4 +1,4 @@
-DROP DATABASE DBMSproject;
+DROP DATABASE IF EXISTS DBMSproject;
 CREATE DATABASE DBMSproject;
 USE DBMSproject;
 
@@ -18,7 +18,6 @@ CREATE TABLE announcements (
     issued_by VARCHAR(100) NOT NULL
 );
 
-
 CREATE TABLE question (
     id INT AUTO_INCREMENT PRIMARY KEY,
     question TEXT NOT NULL,
@@ -36,7 +35,8 @@ CREATE TABLE test (
     duration INT UNSIGNED NOT NULL,
     numberOfQues INT UNSIGNED NOT NULL,
     eachQuesMarks INT UNSIGNED NOT NULL,
-    totalMarks INT GENERATED ALWAYS AS (numberOfQues * eachQuesMarks) STORED -- derived attribute
+    -- totalMarks INT GENERATED ALWAYS AS (numberOfQues * eachQuesMarks) STORED -- derived attribute
+    totalMarks INT UNSIGNED NOT NULL,
 );
 
 CREATE TABLE test_has_ques (
@@ -71,3 +71,34 @@ CREATE TABLE admin (
     adminUserName VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL
 )
+
+-- CREATING TRIGGERS
+CREATE TRIGGER update_score_after_submission
+AFTER INSERT ON submission
+FOR EACH ROW
+BEGIN
+    DECLARE correctAnswer ENUM('A','B','C','D');
+
+    SELECT answer INTO correctAnswer
+    FROM question WHERE id = NEW.questionid;
+
+    IF NEW.selected = correctAnswer THEN
+        UPDATE result
+        SET score = score + (
+            SELECT eachQuesMarks FROM test
+            WHERE id = (SELECT testid FROM result WHERE id = NEW.resultid)
+        )
+        WHERE id = NEW.resultid;
+    END IF;
+END;
+
+DELIMITER $$
+
+CREATE TRIGGER calculate_totalmarks_before_insert
+BEFORE INSERT ON test
+FOR EACH ROW
+BEGIN
+    SET NEW.totalMarks = NEW.numberOfQues * NEW.eachQuesMarks;
+END$$
+
+DELIMITER ;

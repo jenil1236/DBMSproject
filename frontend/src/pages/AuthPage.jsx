@@ -1,10 +1,15 @@
 import { useState } from "react";
 import "./AuthPage.css";
+import { useLocation, useNavigate } from "react-router-dom";
 
-function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
+function AuthPage({ onLogin }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Determine if it's login or signup based on route
+  const isLoginPage = location.pathname === "/login";
   const [showPassword, setShowPassword] = useState(false);
-  
+
   // Form states
   const [formData, setFormData] = useState({
     username: "",
@@ -24,14 +29,15 @@ function AuthPage() {
     }));
   };
 
+  // In AuthPage.jsx - update the response handling
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage("");
 
     try {
-      const endpoint = isLogin ? "/api/login" : "/api/register";
-      const body = isLogin 
+      const endpoint = isLoginPage ? "/api/auth/login" : "/api/auth/register";
+      const body = isLoginPage
         ? { username: formData.username, password: formData.password }
         : { username: formData.username, email: formData.email, password: formData.password };
 
@@ -41,9 +47,22 @@ function AuthPage() {
         credentials: "include",
         body: JSON.stringify(body)
       });
-      
+
       const data = await res.json();
-      setMessage(data.message || data.error);
+
+      if (res.ok) {
+        setMessage(data.message || "Success!");
+        if (onLogin && data.user) {
+          onLogin(data.user);
+        }
+        // Redirect to home page
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
+      } else {
+        // Show error message from backend
+        setMessage(data.error || "Authentication failed");
+      }
     } catch (err) {
       setMessage("Error connecting to server");
     } finally {
@@ -56,11 +75,13 @@ function AuthPage() {
   };
 
   const toggleForm = () => {
-    setIsLogin(!isLogin);
-    setMessage("");
-    setFormData({ username: "", email: "", password: "" });
+    // Navigate to the other auth page instead of toggling state
+    if (isLoginPage) {
+      navigate("/signup");
+    } else {
+      navigate("/login");
+    }
   };
-
   return (
     <div className="auth-container">
       <div className="auth-card">
@@ -71,21 +92,21 @@ function AuthPage() {
             <span>YourApp</span>
           </div>
           <h1 className="auth-title">
-            {isLogin ? "Sign in" : "Create your account"}
+            {isLoginPage ? "Sign in" : "Create your account"}
           </h1>
           <p className="auth-subtitle">
-            {isLogin ? "to continue to YourApp" : "to get started with YourApp"}
+            {isLoginPage ? "to continue to YourApp" : "to get started with YourApp"}
           </p>
         </div>
 
         {/* Google Sign In Button */}
-        <button 
+        <button
           className="google-btn"
           onClick={googleLogin}
           type="button"
         >
           <i className="fab fa-google"></i>
-          <span>Sign {isLogin ? "in" : "up"} with Google</span>
+          <span>Sign {isLoginPage ? "in" : "up"} with Google</span>
         </button>
 
         {/* Divider */}
@@ -95,7 +116,7 @@ function AuthPage() {
 
         {/* Form */}
         <form className="auth-form" onSubmit={handleSubmit}>
-          {!isLogin && (
+          {!isLoginPage && (
             <div className="input-group">
               <input
                 type="email"
@@ -103,7 +124,7 @@ function AuthPage() {
                 placeholder=" "
                 value={formData.email}
                 onChange={handleInputChange}
-                required={!isLogin}
+                required={!isLoginPage}
                 className="auth-input"
               />
               <label className="auth-label">Email</label>
@@ -146,15 +167,15 @@ function AuthPage() {
             </button>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="submit-btn"
             disabled={isLoading}
           >
             {isLoading ? (
               <div className="spinner"></div>
             ) : (
-              isLogin ? "Sign in" : "Create account"
+              isLoginPage ? "Sign in" : "Create account"
             )}
           </button>
         </form>
@@ -169,13 +190,13 @@ function AuthPage() {
         {/* Footer */}
         <div className="auth-footer">
           <p>
-            {isLogin ? "Don't have an account?" : "Already have an account?"}
-            <button 
-              type="button" 
+            {isLoginPage ? "Don't have an account?" : "Already have an account?"}
+            <button
+              type="button"
               className="toggle-form-btn"
               onClick={toggleForm}
             >
-              {isLogin ? "Sign up" : "Sign in"}
+              {isLoginPage ? "Sign up" : "Sign in"}
             </button>
           </p>
         </div>
