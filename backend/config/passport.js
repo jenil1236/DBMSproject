@@ -11,7 +11,7 @@ export default function setupPassport(passport) {
     passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
-        const [rows] = await pool.query("SELECT * FROM users WHERE username = ?", [username]);
+        const [rows] = await pool.query("SELECT * FROM user WHERE username = ?", [username]);
         const user = rows[0];
         if (!user) return done(null, false, { message: "User not found" });
 
@@ -39,12 +39,12 @@ export default function setupPassport(passport) {
           const email = profile.emails?.[0]?.value || null;
           const username = profile.displayName;
 
-          const [rows] = await pool.query("SELECT * FROM users WHERE google_id = ?", [googleId]);
+          const [rows] = await pool.query("SELECT * FROM user WHERE google_id = ?", [googleId]);
           let user = rows[0];
 
           if (!user) {
             const [result] = await pool.query(
-              "INSERT INTO users (username, email, google_id) VALUES (?, ?, ?)",
+              "INSERT INTO user (username, email, google_id) VALUES (?, ?, ?)",
               [username, email, googleId]
             );
             user = { id: result.insertId, username, email, google_id: googleId };
@@ -63,7 +63,7 @@ export default function setupPassport(passport) {
 
   passport.deserializeUser(async (id, done) => {
     try {
-      const [rows] = await pool.query("SELECT * FROM users WHERE id = ?", [id]);
+      const [rows] = await pool.query("SELECT * FROM user WHERE id = ?", [id]);
       done(null, rows[0]);
     } catch (err) {
       done(err);

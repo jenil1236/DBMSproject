@@ -46,7 +46,7 @@ app.post("/api/register", async (req, res) => {
   try {
     const hashed = await bcrypt.hash(password, 10);
     await pool.execute(
-      "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+      "INSERT INTO user (username, email, password) VALUES (?, ?, ?)",
       [username, email, hashed]
     );
     res.send({ message: "User registered successfully" });
