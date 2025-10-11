@@ -18,7 +18,6 @@ CREATE TABLE announcements (
     issued_by VARCHAR(100) NOT NULL
 );
 
-
 CREATE TABLE question (
     id INT AUTO_INCREMENT PRIMARY KEY,
     question TEXT NOT NULL,
@@ -36,7 +35,8 @@ CREATE TABLE test (
     duration INT UNSIGNED NOT NULL,
     numberOfQues INT UNSIGNED NOT NULL,
     eachQuesMarks INT UNSIGNED NOT NULL,
-    totalMarks INT GENERATED ALWAYS AS (numberOfQues * eachQuesMarks) STORED -- derived attribute
+    -- totalMarks INT GENERATED ALWAYS AS (numberOfQues * eachQuesMarks) STORED -- derived attribute
+    totalMarks INT UNSIGNED NOT NULL,
 );
 
 CREATE TABLE test_has_ques (
@@ -91,3 +91,14 @@ BEGIN
         WHERE id = NEW.resultid;
     END IF;
 END;
+
+DELIMITER $$
+
+CREATE TRIGGER calculate_totalmarks_before_insert
+BEFORE INSERT ON test
+FOR EACH ROW
+BEGIN
+    SET NEW.totalMarks = NEW.numberOfQues * NEW.eachQuesMarks;
+END$$
+
+DELIMITER ;
