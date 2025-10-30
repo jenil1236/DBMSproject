@@ -1,7 +1,9 @@
-import { useState } from "react";
+// src/pages/AdminLogin.jsx
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./AdminLogin.css";
 
-function AdminLogin() {
+function AdminLogin({ onLogin }) {
   const [formData, setFormData] = useState({
     adminUserName: "",
     password: ""
@@ -9,6 +11,7 @@ function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,11 +40,15 @@ function AdminLogin() {
       const data = await res.json();
       
       if (res.ok) {
-        setMessage(data.message);
-        // Redirect or handle successful login here
-        console.log("Admin logged in:", data.admin);
+        setMessage("Login successful! Redirecting...");
+        if (onLogin && data.admin) {
+          onLogin(data.admin);
+        }
+        setTimeout(() => {
+          navigate("/admin/dashboard");
+        }, 1000);
       } else {
-        setMessage(data.error);
+        setMessage(data.error || "Login failed");
       }
     } catch (err) {
       setMessage("Error connecting to server");
@@ -120,8 +127,8 @@ function AdminLogin() {
 
         {/* Message */}
         {message && (
-          <div className={`admin-message ${message.includes("Invalid") || message.includes("Error") ? "error" : "success"}`}>
-            <i className={`fas ${message.includes("Invalid") || message.includes("Error") ? "fa-exclamation-circle" : "fa-check-circle"}`}></i>
+          <div className={`admin-message ${message.includes("Invalid") || message.includes("Error") || message.includes("failed") ? "error" : "success"}`}>
+            <i className={`fas ${message.includes("Invalid") || message.includes("Error") || message.includes("failed") ? "fa-exclamation-circle" : "fa-check-circle"}`}></i>
             {message}
           </div>
         )}

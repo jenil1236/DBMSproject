@@ -15,8 +15,8 @@ import setupPassport from "./config/passport.js";
 import authRoutes from "./routes/AuthRoutes.js";
 import adminRoutes from "./routes/AdminRoutes.js";
 import submissionRoutes from "./routes/SubmissionRoutes.js";
-// import testRoutes from "./routes/TestRoutes.js";
-// import announcementRoutes from "./routes/AnnouncementRoutes.js";
+import testRoutes from "./routes/TestRoutes.js";
+import announcementRoutes from "./routes/AnnouncementRoutes.js";
 // import otherRoutes from "./routes/OtherRoutes.js";
 
 const app = express();
@@ -39,8 +39,10 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
+    secure: false, // Set to true in production with HTTPS
     maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
-  }
+  },
+  name: 'sessionId' // Give session a specific name
 }));
 
 app.use(passport.initialize());
@@ -52,8 +54,9 @@ setupPassport(passport);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/submission", submissionRoutes);
-// app.use("/api/test", testRoutes);
-// app.use("/api/announcement", announcementRoutes);
+app.use('/api/admin/test', testRoutes);
+app.use('/api/test', testRoutes); // Public test routes for users
+app.use("/api/announcement", announcementRoutes);
 
 // app.get("/leaderboard", isAdmin, async (req, res) => {
 //     try {

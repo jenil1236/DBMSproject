@@ -1,0 +1,399 @@
+/* src/pages/AnnouncementsPage.css */
+.announcements-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding-top: 30px;
+}
+
+/* Loading State */
+.announcements-loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+  color: white;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Header */
+.announcements-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 2rem 0;
+  margin-top: 70px;
+  /* Add top margin to account for fixed navbar */
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.header-text {
+  flex: 1;
+}
+
+.announcements-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #2c3e50;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+}
+
+.announcements-title i {
+  color: #667eea;
+  font-size: 2.2rem;
+}
+
+.announcements-subtitle {
+  color: #7f8c8d;
+  font-size: 1.2rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.header-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  color: white;
+  min-width: 80px;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-top: 0.5rem;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Error Message */
+.error-message {
+  background: #e74c3c;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+}
+
+.error-message i {
+  margin-right: 10px;
+}
+
+.error-close {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.error-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* No Announcements */
+.no-announcements {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.no-announcements-icon {
+  font-size: 4rem;
+  color: #bdc3c7;
+  margin-bottom: 1.5rem;
+}
+
+.no-announcements h3 {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.no-announcements p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+/* Announcements Grid */
+.announcements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+/* Announcement Card */
+.announcement-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.announcement-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.announcement-card:hover .card-glow {
+  opacity: 1;
+}
+
+.card-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+/* Card Header */
+.announcement-header {
+  padding: 1.5rem 1.5rem 0 1.5rem;
+}
+
+.announcement-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.priority-icon {
+  font-size: 1.2rem;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.relative-time {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.full-date {
+  color: #7f8c8d;
+  font-size: 0.8rem;
+}
+
+/* Card Content */
+.announcement-content {
+  padding: 1rem 1.5rem;
+}
+
+.announcement-title {
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  line-height: 1.4;
+}
+
+.announcement-body {
+  color: #5a6c7d;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.announcement-body p {
+  margin: 0;
+}
+
+/* Card Footer */
+.announcement-footer {
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.issued-by {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.issued-by i {
+  color: #667eea;
+}
+
+.announcement-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #7f8c8d;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:hover {
+  background: #f8f9fa;
+  color: #667eea;
+  transform: scale(1.1);
+}
+
+.share-btn:hover {
+  color: #3498db;
+}
+
+.bookmark-btn:hover {
+  color: #f39c12;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .announcements-header {
+    padding: 1.5rem 0;
+    margin-top: 70px;
+    /* Maintain consistent top margin on mobile */
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .announcements-title {
+    font-size: 2rem;
+    justify-content: center;
+  }
+
+  .header-stats {
+    justify-content: center;
+  }
+
+  .announcements-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .announcement-card {
+    margin: 0 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .announcements-title {
+    font-size: 1.8rem;
+  }
+
+  .announcements-subtitle {
+    font-size: 1rem;
+  }
+
+  .header-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .stat-item {
+    min-width: 120px;
+  }
+
+  .announcement-footer {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .announcement-actions {
+    align-self: flex-end;
+  }
+}

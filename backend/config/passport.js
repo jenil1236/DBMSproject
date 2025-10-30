@@ -8,7 +8,7 @@ import pool from "./db.js";
 
 // 🔹 Local strategy
 export default function setupPassport(passport) {
-    passport.use(
+  passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
         const [rows] = await pool.query("SELECT * FROM user WHERE username = ?", [username]);
@@ -61,10 +61,23 @@ export default function setupPassport(passport) {
   // 🔹 Serialize / Deserialize
   passport.serializeUser((user, done) => done(null, user.id));
 
+  // In config/passport.js - update deserializeUser
   passport.deserializeUser(async (id, done) => {
     try {
-      const [rows] = await pool.query("SELECT * FROM user WHERE id = ?", [id]);
-      done(null, rows[0]);
+      // First try to find in user table
+      const [userRows] = await pool.query("SELECT * FROM user WHERE id = ?", [id]);
+      if (userRows.length > 0) {
+        return done(null, userRows[0]);
+      }
+
+      // If not found in user table, try admin table
+      const [adminRows] = await pool.query("SELECT * FROM admin WHERE id = ?", [id]);
+      if (adminRows.length > 0) {
+        return done(null, adminRows[0]);
+      }
+
+      // User not found
+      done(null, false);
     } catch (err) {
       done(err);
     }

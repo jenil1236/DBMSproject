@@ -1,6 +1,8 @@
 // middleware.js
 export const isAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) return next();
+  if (req.isAuthenticated()){ 
+    return next();
+  }
   res.status(401).send({ error: "Unauthorized" });
 }
 
@@ -20,12 +22,12 @@ export const isAuthenticated = (req, res, next) => {
 //     next();
 // }
 
-// export const isAdmin = (req, res, next) => {
-//     if (req.isAdmin)
-//         return next();
-//     req.flash('error', 'You are not authorized');
-//     res.redirect('/');
-// }
+export const isAdmin = (req, res, next) => {
+    if (req.isAuthenticated() && req.user.adminUserName) {
+        return next();
+    }
+    res.status(403).json({ error: "Admin access required" });
+}
 
 // export const checkValidity = async (req, res, next) => {
 //     let { id } = req.params;

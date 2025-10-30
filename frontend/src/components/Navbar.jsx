@@ -66,6 +66,14 @@ const Navbar = ({ user, onLogout }) => {
                         Test
                     </Link>
                     <Link
+                        to="/announcements"
+                        className={`nav-link ${location.pathname === '/announcements' ? 'active' : ''}`}
+                        onClick={() => setIsMenuOpen(false)}
+                    >
+                        <i className="fas fa-bullhorn"></i>
+                        Announcements
+                    </Link>
+                    <Link
                         to="/history"
                         className={`nav-link ${location.pathname === '/history' ? 'active' : ''}`}
                         onClick={() => setIsMenuOpen(false)}

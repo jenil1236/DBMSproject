@@ -1,24 +1,16 @@
-// import express from "express";
-// const router = express.Router();
+import express from 'express';
+import {
+  getAllAnnouncements,
+  createAnnouncement,
+  updateAnnouncement,
+  deleteAnnouncement
+} from '../controllers/Announcements.js';
 
-// import { isAdmin,isAuthenticated } from "../middlewares.js";
+const router = express.Router();
 
-// import { allAnnouncements, newAnnouncementForm, createAnnouncement, deleteAnnouncement, editAnnouncementForm, updateAnnouncement } from "../controllers/Announcements.js";
+router.get('/', getAllAnnouncements);
+router.post('/new', createAnnouncement);
+router.put('/:id', updateAnnouncement);
+router.delete('/:id', deleteAnnouncement);
 
-// router.get("/", isAuthenticated, allAnnouncements);
-
-// router.get("/new", isAdmin, newAnnouncementForm);
-
-// //Create Announcement
-// router.post("/new", isAdmin, createAnnouncement)
-
-// //Delete Announcement
-// router.delete("/:id", isAdmin, deleteAnnouncement);
-
-// //Show Announcement Edit Form
-// router.get("/:id", isAdmin, editAnnouncementForm);
-
-// //Update Announcement
-// router.put("/:id", isAdmin, updateAnnouncement);
-
-// export default router;
+export default router;

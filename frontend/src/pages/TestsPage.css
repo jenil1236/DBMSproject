@@ -1,0 +1,488 @@
+/* src/pages/TestsPage.css */
+.tests-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tests-loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: white;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Header */
+.tests-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 3rem 0 2rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tests-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.tests-title i {
+  color: #667eea;
+}
+
+.tests-subtitle {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Error Message */
+.error-message {
+  background: #e74c3c;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin: 2rem auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+  animation: slideDown 0.3s ease;
+}
+
+.error-close {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin-left: auto;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.error-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* No Tests */
+.no-tests {
+  text-align: center;
+  color: white;
+  padding: 4rem 2rem;
+}
+
+.no-tests i {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.no-tests h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.no-tests p {
+  opacity: 0.8;
+}
+
+/* Tests Grid */
+.tests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+/* Test Card */
+.test-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.test-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.test-card-upcoming:hover {
+  box-shadow: 0 15px 40px rgba(243, 156, 18, 0.3);
+}
+
+.test-card-active:hover {
+  box-shadow: 0 15px 40px rgba(39, 174, 96, 0.3);
+}
+
+.test-card-completed:hover {
+  box-shadow: 0 15px 40px rgba(127, 140, 141, 0.3);
+}
+
+/* Status Badge */
+.status-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 6px 12px;
+  border-radius: 15px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Test Header */
+.test-header {
+  margin-bottom: 1.5rem;
+  padding-right: 100px;
+}
+
+.test-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+
+.countdown {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #e74c3c;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Test Details */
+.test-details {
+  margin-bottom: 2rem;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: rgba(248, 249, 250, 0.8);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.detail-item:hover {
+  background: rgba(233, 236, 239, 0.8);
+}
+
+.detail-item i {
+  color: #667eea;
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-label {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 1rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Test Actions */
+.test-actions {
+  text-align: center;
+}
+
+.start-btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 15px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.start-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.start-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.start-btn-upcoming {
+  background: #f39c12;
+  color: white;
+}
+
+.start-btn-upcoming:not(:disabled):hover {
+  background: #e67e22;
+}
+
+.start-btn-active {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  color: white;
+}
+
+.start-btn-active:not(:disabled):hover {
+  background: linear-gradient(135deg, #229954, #27ae60);
+}
+
+.start-btn-completed {
+  background: #7f8c8d;
+  color: white;
+}
+
+.start-btn-completed:not(:disabled):hover {
+  background: #95a5a6;
+}
+
+.btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Card Glow Effect */
+.card-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.test-card:hover .card-glow {
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tests-title {
+    font-size: 2rem;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .tests-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+  }
+  
+  .detail-row {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+  
+  .test-header {
+    padding-right: 0;
+  }
+  
+  .status-badge {
+    position: static;
+    display: inline-flex;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 15px;
+  }
+  
+  .test-card {
+    padding: 1.5rem;
+  }
+  
+  .tests-header {
+    padding: 2rem 0 1.5rem;
+  }
+}
+/* src/pages/TestsPage.css */
+.tests-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding-top: 80px; /* Add padding for fixed navbar */
+}
+
+/* Remove the old header styles and replace with: */
+.tests-header {
+  background: transparent; /* Changed from white background */
+  backdrop-filter: none; /* Remove blur */
+  padding: 2rem 0 1rem; /* Reduced padding */
+  text-align: center;
+  border-bottom: none; /* Remove border */
+}
+
+.tests-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white; /* Changed to white for better contrast */
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Add text shadow for readability */
+}
+
+.tests-title i {
+  color: white; /* Changed to white */
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tests-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9); /* Changed to white with opacity */
+  margin: 0;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Update container to account for navbar */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 2rem; /* Added bottom padding for footer */
+}
+
+/* Make test cards slightly more compact */
+.test-card {
+  background: rgba(255, 255, 255, 0.98); /* Slightly more opaque */
+  backdrop-filter: blur(10px);
+  border-radius: 15px; /* Slightly smaller radius */
+  padding: 1.5rem; /* Reduced padding */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Reduce grid gap */
+.tests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 1.5rem; /* Reduced gap */
+  padding: 1rem 0 2rem; /* Adjusted padding */
+}
+
+/* Make loading container account for navbar */
+.tests-loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 80px); /* Account for navbar height */
+  color: white;
+  margin-top: 80px; /* Push below navbar */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tests-page {
+    padding-top: 70px; /* Adjust for mobile navbar */
+  }
+  
+  .tests-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .tests-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tests-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .test-card {
+    margin: 0 10px; /* Add small margin on mobile */
+  }
+}

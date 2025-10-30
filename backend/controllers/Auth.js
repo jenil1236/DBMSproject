@@ -81,8 +81,7 @@ export const logoutUser = (req, res, next) => {
 // Add to /controllers/Auth.js
 export const checkAuth = (req, res) => {
     if (req.isAuthenticated()) {
-        console.log("checkAuth")
-        console.log(req.user);
+        // console.log("checkAuth",req)
         res.send({ 
             user: {
                 id: req.user.id,
@@ -92,7 +91,6 @@ export const checkAuth = (req, res) => {
             }
         });
     } else {
-        console.log("unauthorised of checkAuth");
         res.status(401).send({ error: "Not authenticated" });
     }
 }

@@ -134,20 +134,6 @@ const HomePage = ({ user, onLogout }) => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="cta-section">
-        <div className="container">
-          <div className="cta-content">
-            <h2>Ready to Challenge Your Mind?</h2>
-            <p>Join thousands of users who are improving their logical reasoning skills daily</p>
-            <button className="btn primary large">
-              <i className="fas fa-rocket"></i>
-              Get Started Free
-            </button>
-          </div>
-        </div>
-      </section>
-
       <Footer />
     </div>
   );
