@@ -14,7 +14,7 @@ router.get("/history", isAuthenticated, async (req, res) => {
         
         // 1️ Get all results for this user
         const q1 = `
-            SELECT r.id AS resultId, r.testid, r.score, t.testName, t.totalMarks, t.startTime
+            SELECT r.id AS resultId, r.testid, r.score, t.testName, t.numberOfQues*t.eachQuesMarks as totalMarks, t.startTime
             FROM result r
             JOIN test t ON r.testid = t.id
             WHERE r.userid = ?

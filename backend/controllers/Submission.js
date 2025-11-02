@@ -46,26 +46,27 @@ export const getSubmission = async (req, res) => {
 
 
 export const postSubmission = async (req, res) => {
-    const { submissions } = req.body;
-    // console.log(submissions);
-    const testId = req.params.id;
-    // console.log(testId);
-    const id = req.user.id;
-    const q1 = 'INSERT INTO result(userid, testid, score) VALUES (?, ?, 0)';
-    const [result] = await pool.execute(q1, [id, testId]);
-    // console.log(id);
-    const q2 = 'SELECT questionid, answer FROM test_has_ques t JOIN question q ON t.questionid = q.id WHERE testid = ?';
-    const [questions] = await pool.execute(q2, [testId]);
-    var allSub = [];
-    for (let i = 0; i < questions.length; i++) {
-        if (submissions[i] !== "") {
-            let status = (questions[i].answer === submissions[i]);
-            allSub.push([result.insertId, questions[i].questionid, submissions[i], status]);
-        }
+    try {
+        const { submissions } = req.body;
+        const testId = req.params.id;
+        const userId = req.user.id;
+        
+        // Call the cursor-based stored procedure
+        const [result] = await pool.execute(
+            "CALL ProcessTestSubmissions(?, ?, ?, @result_id)",
+            [userId, testId, JSON.stringify(submissions)]
+        );
+        
+        // Get the result ID
+        const [outputs] = await pool.execute("SELECT @result_id as result_id");
+        const resultId = outputs[0].result_id;
+        
+        res.json({ 
+            message: 'Submission Successful',
+            resultId: resultId
+        });
+    } catch (err) {
+        console.error('Error processing submission:', err);
+        res.status(500).json({ error: 'Error processing submission' });
     }
-    if(allSub.length > 0){
-        const q3 = 'INSERT INTO submission(resultid, questionid, selected, status) VALUES ?';
-        await pool.query(q3, [allSub]);
-    }
-    res.json({ message: 'Submission Succesful' });
 }

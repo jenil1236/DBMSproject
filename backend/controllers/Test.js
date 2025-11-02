@@ -18,7 +18,7 @@ export const getTestDetails = async (req, res) => {
 
     // Get test details
     const [testRows] = await pool.query('SELECT * FROM test WHERE id = ?', [id]);
-    
+
     if (testRows.length === 0) {
       return res.status(404).json({ success: false, message: 'Test not found' });
     }
@@ -48,7 +48,7 @@ export const getTestDetails = async (req, res) => {
 // 📗 Create new test
 export const createTest = async (req, res) => {
   const connection = await pool.getConnection();
-  
+
   try {
     const { testName, startTime, duration, numberOfQues, eachQuesMarks } = req.body;
     const numQuestions = parseInt(numberOfQues);
@@ -59,47 +59,49 @@ export const createTest = async (req, res) => {
 
     // Check if we have enough questions in the database
     const [questionCount] = await connection.query('SELECT COUNT(*) as count FROM question');
-    
+
     if (questionCount[0].count < numberOfQues) {
-      return res.status(400).json({ 
-        success: false, 
-        message: `Not enough questions available. Required: ${numberOfQues}, Available: ${questionCount[0].count}` 
+      return res.status(400).json({
+        success: false,
+        message: `Not enough questions available. Required: ${numberOfQues}, Available: ${questionCount[0].count}`
       });
     }
 
     await connection.beginTransaction();
 
-    const totalMarks = numberOfQues * eachQuesMarks;
-
-    // Insert test
-    const [result] = await connection.query(
-      `INSERT INTO test (testName, startTime, duration, numberOfQues, eachQuesMarks, totalMarks)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [testName, startTime, duration, numberOfQues, eachQuesMarks, totalMarks]
+    // Insert test using stored procedure
+    const [result] = await connection.execute(
+      "CALL CreateTest(?, ?, ?, ?, ?, @test_id, @error_code, @error_message)",
+      [testName, startTime, duration, numberOfQues, eachQuesMarks]
     );
 
-    const testId = result.insertId;
-
-    // Get random questions
-    const [randomQuestions] = await connection.query(
-      'SELECT id FROM question ORDER BY RAND() LIMIT ?',
-      [numQuestions]
+    // Get the output parameters
+    const [outputs] = await connection.execute(
+      "SELECT @test_id as test_id, @error_code as error_code, @error_message as error_message"
     );
 
-    // Insert test-question associations
-    for (const question of randomQuestions) {
-      await connection.query(
-        'INSERT INTO test_has_ques (testid, questionid) VALUES (?, ?)',
-        [testId, question.id]
-      );
+    const { test_id, error_code, error_message } = outputs[0];
+
+    // Check if there was an error
+    if (error_code !== 0) {
+      console.error(`Database error: ${error_code} - ${error_message}`);
+      throw new Error(`Database error: ${error_message}`);
     }
+
+    const testId = test_id;
+
+    // Assign random questions using cursor-based stored procedure
+    const [assignResult] = await connection.execute(
+      "CALL AssignRandomQuestions(?, ?)",
+      [testId, numQuestions]
+    );
 
     await connection.commit();
 
     res.status(201).json({
       success: true,
       message: 'Test created successfully with random questions',
-      data: { id: testId, testName, startTime, duration, numberOfQues, eachQuesMarks, totalMarks }
+      data: { id: testId, testName, startTime, duration, numberOfQues, eachQuesMarks, totalMarks: numberOfQues * eachQuesMarks }
     });
   } catch (err) {
     await connection.rollback();
@@ -113,14 +115,14 @@ export const createTest = async (req, res) => {
 // ✏️ Update test
 export const updateTest = async (req, res) => {
   const connection = await pool.getConnection();
-  
+
   try {
     const { id } = req.params;
     const { testName, startTime, duration, eachQuesMarks, questions } = req.body;
 
     // Check if test exists and get current startTime
     const [testRows] = await connection.query('SELECT startTime FROM test WHERE id = ?', [id]);
-    
+
     if (testRows.length === 0) {
       return res.status(404).json({ success: false, message: 'Test not found' });
     }
@@ -130,9 +132,9 @@ export const updateTest = async (req, res) => {
 
     // Check if test has already started
     if (now >= currentStartTime) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Cannot update test after it has started' 
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot update test after it has started'
       });
     }
 
@@ -141,12 +143,11 @@ export const updateTest = async (req, res) => {
     // Get current numberOfQues to maintain consistency
     const [currentTest] = await connection.query('SELECT numberOfQues FROM test WHERE id = ?', [id]);
     const numberOfQues = currentTest[0].numberOfQues;
-    const totalMarks = numberOfQues * eachQuesMarks;
 
     // Update test details
     const [result] = await connection.query(
-      `UPDATE test SET testName=?, startTime=?, duration=?, eachQuesMarks=?, totalMarks=? WHERE id=?`,
-      [testName, startTime, duration, eachQuesMarks, totalMarks, id]
+      `SELECT UpdateTest(?, ?, ?, ?, ?) as affectedRows`,
+      [testName, startTime, duration, eachQuesMarks, id]
     );
 
     // Update question answers if provided
@@ -180,7 +181,7 @@ export const deleteTest = async (req, res) => {
 
     // Check if test exists and get startTime
     const [testRows] = await pool.query('SELECT startTime FROM test WHERE id = ?', [id]);
-    
+
     if (testRows.length === 0) {
       return res.status(404).json({ success: false, message: 'Test not found' });
     }
@@ -190,9 +191,9 @@ export const deleteTest = async (req, res) => {
 
     // Check if test has already started
     if (now >= startTime) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Cannot delete test after it has started' 
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete test after it has started'
       });
     }
 
@@ -222,7 +223,7 @@ export const validateTestStart = async (req, res) => {
 
     // Get test details
     const [testRows] = await pool.query('SELECT * FROM test WHERE id = ?', [testId]);
-    
+
     if (testRows.length === 0) {
       return res.status(404).json({
         success: false,

@@ -94,8 +94,8 @@ const History = ({user, onLogout}) => {
         <Navbar user={user} onLogout={onLogout}/>
         <div className="history-container" style={{marginTop: '80px'}}>
           <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p>Loading your test history...</p>
+            {/* <div className="spinner"></div> */}
+            {/* <p>Loading your test history...</p> */}
           </div>
         </div>
         <Footer />
@@ -107,7 +107,7 @@ const History = ({user, onLogout}) => {
     return (
       <div className="history-page">
         <Navbar user={user} onLogout={onLogout}/>
-        <div className="history-container" style={{marginTop: '80px'}}>
+        <div className="history-container" >
           <div className="error-message">
             <h2>Error Loading History</h2>
             <p>{error}</p>
@@ -122,7 +122,7 @@ const History = ({user, onLogout}) => {
   return (
     <div className="history-page">
       <Navbar user={user} onLogout={onLogout}/>
-      <div className="history-container" style={{marginTop: '80px'}}>
+      <div className="history-container" >
         <header className="history-header">
           <h1>Test History</h1>
           <p>Review your previous test attempts and submissions</p>

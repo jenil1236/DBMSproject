@@ -7,16 +7,32 @@ export const registerUser = async (req, res) => {
     try {
         const hashed = await bcrypt.hash(password, 10);
         
-        // Insert new user
+        // Call the stored procedure to register user
         const [result] = await pool.execute(
-            "INSERT INTO user (username, email, password) VALUES (?, ?, ?)",
+            "CALL RegisterUser(?, ?, ?, @user_id, @error_code, @error_message)",
             [username, email, hashed]
         );
+
+        // Get the output parameters
+        const [outputs] = await pool.execute(
+            "SELECT @user_id as user_id, @error_code as error_code, @error_message as error_message"
+        );
+        
+        const { user_id, error_code, error_message } = outputs[0];
+        
+        // Check if there was an error
+        if (error_code !== 0) {
+            console.error(`Database error: ${error_code} - ${error_message}`);
+            if (error_code === 1062) { // Duplicate entry error
+                return res.status(400).send({ error: "Username or email already exists" });
+            }
+            return res.status(500).send({ error: "Error registering user" });
+        }
 
         // Get the newly created user
         const [users] = await pool.execute(
             "SELECT id, username, email FROM user WHERE id = ?",
-            [result.insertId]
+            [user_id]
         );
         
         const newUser = users[0];

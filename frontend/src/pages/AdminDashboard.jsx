@@ -89,7 +89,6 @@ function AdminDashboard({ admin, onLogout }) {
 
       const requestBody = {
         ...testForm,
-        totalMarks: parseInt(testForm.numberOfQues) * parseInt(testForm.eachQuesMarks)
       };
 
       // Include questions data for updates
@@ -467,7 +466,7 @@ function AdminDashboard({ admin, onLogout }) {
                     </div>
                     <div className="admin-dashboard-test-info">
                       <i className="fas fa-star"></i>
-                      <span>Total Marks: {test.totalMarks}</span>
+                      <span>Total Marks: {test.numberOfQues*test.eachQuesMarks}</span>
                     </div>
                   </div>
                   <div className="admin-dashboard-test-actions">

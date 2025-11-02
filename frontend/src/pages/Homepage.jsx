@@ -62,16 +62,6 @@ const HomePage = ({ user, onLogout }) => {
               Get instant results, track your progress, and join a community of 
               critical thinkers dedicated to mastering the art of logic.
             </p>
-            <div className="hero-buttons">
-              <button className="btn primary">
-                <i className="fas fa-play"></i>
-                Start Test Now
-              </button>
-              <button className="btn secondary">
-                <i className="fas fa-chart-bar"></i>
-                View Demo
-              </button>
-            </div>
           </div>
           
           <div className="hero-visual">
@@ -98,7 +88,7 @@ const HomePage = ({ user, onLogout }) => {
       </section>
 
       {/* Stats Section */}
-      <section className="stats-section">
+      {/* <section className="stats-section">
         <div className="container">
           <div className="stats-grid">
             {stats.map((stat, index) => (
@@ -109,7 +99,7 @@ const HomePage = ({ user, onLogout }) => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Features Section */}
       <section className="features-section">

@@ -104,8 +104,8 @@ const Submission = ({ user, onLogout }) => {
         <Navbar user={user} onLogout={onLogout} />
         <div className="submission-container" style={{ marginTop: '80px' }}>
           <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p>Loading submission details...</p>
+            {/* <div className="spinner"></div>
+            <p>Loading submission details...</p> */}
           </div>
         </div>
         <Footer />
@@ -157,13 +157,13 @@ const Submission = ({ user, onLogout }) => {
                   <div className="stat">
                     <span className="stat-label">Score:</span>
                     <span className="stat-value score">
-                      {calculateScore()} / {testInfo.totalMarks}
+                      {calculateScore()} / {testInfo.numberOfQues*testInfo.eachQuesMarks}
                     </span>
                   </div>
                   <div className="stat">
                     <span className="stat-label">Percentage:</span>
                     <span className="stat-value percentage">
-                      {((calculateScore() / (testInfo.totalMarks)) * 100).toFixed(1)}%
+                      {((calculateScore() / (testInfo.numberOfQues*testInfo.eachQuesMarks)) * 100).toFixed(1)}%
                     </span>
                   </div>
                 </div>
